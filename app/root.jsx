@@ -128,7 +128,7 @@ export function ErrorBoundary() {
             )}
           </div>
         </MainLayout>
-        <ScrollRestoration />
+<ScrollRestoration />
         <Scripts />
       </body>
     </html>
@@ -194,7 +194,7 @@ const MENU_FRAGMENT = `#graphql
 `;
 
 const HEADER_QUERY = `#graphql
-  fragment Shop on Shop {
+fragment Shop on Shop {
     id
     name
     description

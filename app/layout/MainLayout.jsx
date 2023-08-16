@@ -4,20 +4,22 @@ import { Footer } from '~/sections/Footer';
 import { AnnouncementBar } from '~/sections/AnnouncementBar';
 import { CartMain } from '~/sections/Cart';
 import { SearchForm } from '~/sections/Search';
+import { Suspense } from 'react';
+import { Await } from '@remix-run/react';
 
 
 export function MainLayout({children, cart, header, isLoggedIn }) {
   return (
     <div className="main-wrapper">
 
-      <SectionGroupLayout>
+       <SectionGroupLayout>
         <CartMain cart={cart}/>
       </SectionGroupLayout>
   
-      <SectionGroupLayout>
+      {/*<SectionGroupLayout>
         <SearchForm />
       </SectionGroupLayout>
-  
+   */}
       {/* <SectionGroupLayout>
         <MobileMenuAside menu={header.menu} />
       </SectionGroupLayout> */}

@@ -13,7 +13,7 @@ import {
 import favicon from '../public/favicon.svg';
 import resetStyles from './styles/reset.css';
 import appStyles from './styles/app.css';
-import {Layout} from '~/components/Layout';
+import { MainLayout } from './layout/MainLayout';
 
 export function links() {
   return [
@@ -85,9 +85,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Layout {...data}>
+        <MainLayout {...data}>
           <Outlet />
-        </Layout>
+        </MainLayout>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -117,7 +117,7 @@ export function ErrorBoundary() {
         <Links />
       </head>
       <body>
-        <Layout {...root.data}>
+        <MainLayout {...root.data}>
           <div className="route-error">
             <h1>Oops</h1>
             <h2>{errorStatus}</h2>
@@ -127,7 +127,7 @@ export function ErrorBoundary() {
               </fieldset>
             )}
           </div>
-        </Layout>
+        </MainLayout>
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -17,6 +17,11 @@ import {
  * Export a fetch handler in module format.
  */
 export default {
+  /**
+   * @param {Request} request
+   * @param {Env} env
+   * @param {ExecutionContext} executionContext
+   */
   async fetch(request, env, executionContext) {
     try {
       /**
@@ -26,7 +31,7 @@ export default {
         throw new Error('SESSION_SECRET environment variable is not set');
       }
 
-      const waitUntil = (p) => executionContext.waitUntil(p);
+      const waitUntil = executionContext.waitUntil.bind(executionContext);
       const [cache, session] = await Promise.all([
         caches.open('hydrogen'),
         HydrogenSession.init(request, [env.SESSION_SECRET]),
@@ -38,7 +43,7 @@ export default {
       const {storefront} = createStorefrontClient({
         cache,
         waitUntil,
-        i18n: {language: 'EN', country: 'US'},
+        i18n: getLocaleFromRequest(request),
         publicStorefrontToken: env.PUBLIC_STOREFRONT_API_TOKEN,
         privateStorefrontToken: env.PRIVATE_STOREFRONT_API_TOKEN,
         storeDomain: env.PUBLIC_STORE_DOMAIN,
@@ -64,7 +69,7 @@ export default {
       const handleRequest = createRequestHandler({
         build: remixBuild,
         mode: process.env.NODE_ENV,
-        getLoadContext: () => ({session, storefront, env, cart}),
+        getLoadContext: () => ({session, storefront, cart, env, waitUntil}),
       });
 
       const response = await handleRequest(request);
@@ -88,18 +93,47 @@ export default {
 };
 
 /**
+ * @returns {I18nLocale}
+ * @param {Request} request
+ */
+function getLocaleFromRequest(request) {
+  const url = new URL(request.url);
+  const firstPathPart = url.pathname.split('/')[1]?.toUpperCase() ?? '';
+
+  let pathPrefix = '';
+  let [language, country] = ['EN', 'US'];
+
+  if (/^[A-Z]{2}-[A-Z]{2}$/i.test(firstPathPart)) {
+    pathPrefix = '/' + firstPathPart;
+    [language, country] = firstPathPart.split('-');
+  }
+
+  return {language, country, pathPrefix};
+}
+
+/**
  * This is a custom session implementation for your Hydrogen shop.
  * Feel free to customize it to your needs, add helper methods, or
  * swap out the cookie-based implementation with something else!
  */
 export class HydrogenSession {
-  sessionStorage;
-  session;
+  #sessionStorage;
+  #session;
+
+  /**
+   * @param {SessionStorage} sessionStorage
+   * @param {Session} session
+   */
   constructor(sessionStorage, session) {
-    this.sessionStorage = sessionStorage;
-    this.session = session;
+    this.#sessionStorage = sessionStorage;
+    this.#session = session;
   }
 
+  /**
+   * @static
+   * @param {Request} request
+   * @param {string[]} secrets
+   */
   static async init(request, secrets) {
     const storage = createCookieSessionStorage({
       cookie: {
@@ -116,32 +150,32 @@ export class HydrogenSession {
     return new this(storage, session);
   }
 
-  has(key) {
-    return this.session.has(key);
+  get has() {
+    return this.#session.has;
   }
 
-  get(key) {
-    return this.session.get(key);
+  get get() {
+    return this.#session.get;
+  }
+
+  get flash() {
+    return this.#session.flash;
+  }
+
+  get unset() {
+    return this.#session.unset;
+  }
+
+  get set() {
+    return this.#session.set;
   }
 
   destroy() {
-    return this.sessionStorage.destroySession(this.session);
-  }
-
-  flash(key, value) {
-    this.session.flash(key, value);
-  }
-
-  unset(key) {
-    this.session.unset(key);
-  }
-
-  set(key, value) {
-    this.session.set(key, value);
+    return this.#sessionStorage.destroySession(this.#session);
   }
 
   commit() {
-    return this.sessionStorage.commitSession(this.session);
+    return this.#sessionStorage.commitSession(this.#session);
   }
 }
 
@@ -247,3 +281,6 @@ const CART_QUERY_FRAGMENT = `#graphql
     }
   }
 `;
+
+/** @typedef {import('@shopify/remix-oxygen').SessionStorage} SessionStorage */
+/** @typedef {import('@shopify/remix-oxygen').Session} Session */

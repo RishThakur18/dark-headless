@@ -1,6 +1,10 @@
 import {useLocation} from '@remix-run/react';
 import {useMemo} from 'react';
 
+/**
+ * @param {string} handle
+ * @param {SelectedOption[]} selectedOptions
+ */
 export function useVariantUrl(handle, selectedOptions) {
   const {pathname} = useLocation();
 
@@ -14,6 +18,14 @@ export function useVariantUrl(handle, selectedOptions) {
   }, [handle, selectedOptions, pathname]);
 }
 
+/**
+ * @param {{
+ *   handle: string;
+ *   pathname: string;
+ *   searchParams: URLSearchParams;
+ *   selectedOptions: SelectedOption[];
+ * }}
+ */
 export function getVariantUrl({
   handle,
   pathname,
@@ -35,3 +47,5 @@ export function getVariantUrl({
 
   return path + (searchString ? '?' + searchParams.toString() : '');
 }
+
+/** @typedef {import('@shopify/hydrogen/storefront-api-types').SelectedOption} SelectedOption */

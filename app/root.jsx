@@ -1,9 +1,11 @@
+import {useNonce} from '@shopify/hydrogen';
 import {defer} from '@shopify/remix-oxygen';
 import {
   Links,
   Meta,
   Outlet,
   Scripts,
+  LiveReload,
   useMatches,
   useRouteError,
   useLoaderData,
@@ -13,7 +15,25 @@ import {
 import favicon from '../public/favicon.svg';
 import resetStyles from './styles/reset.css';
 import appStyles from './styles/app.css';
-import { MainLayout } from './layout/MainLayout';
+import {Layout} from '~/components/Layout';
+
+/**
+ * This is important to avoid re-fetching root queries on sub-navigations
+ * @type {ShouldRevalidateFunction}
+ */
+export const shouldRevalidate = ({formMethod, currentUrl, nextUrl}) => {
+  // revalidate when a mutation is performed e.g add to cart, login...
+  if (formMethod && formMethod !== 'GET') {
+    return true;
+  }
+
+  // revalidate when manually revalidating via useRevalidator
+  if (currentUrl.toString() === nextUrl.toString()) {
+    return true;
+  }
+
+  return false;
+};
 
 export function links() {
   return [
@@ -31,6 +51,17 @@ export function links() {
   ];
 }
 
+/**
+ * @return {LoaderReturnData}
+ */
+export const useRootLoaderData = () => {
+  const [root] = useMatches();
+  return root?.data;
+};
+
+/**
+ * @param {LoaderFunctionArgs}
+ */
 export async function loader({context}) {
   const {storefront, session, cart} = context;
   const customerAccessToken = await session.get('customerAccessToken');
@@ -38,8 +69,8 @@ export async function loader({context}) {
 
   // validate the customer access token is valid
   const {isLoggedIn, headers} = await validateCustomerAccessToken(
-    customerAccessToken,
     session,
+    customerAccessToken,
   );
 
   // defer the cart query by not awaiting it
@@ -74,6 +105,8 @@ export async function loader({context}) {
 }
 
 export default function App() {
+  const nonce = useNonce();
+  /** @type {LoaderReturnData} */
   const data = useLoaderData();
 
   return (
@@ -85,11 +118,12 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <MainLayout {...data}>
+        <Layout {...data}>
           <Outlet />
-        </MainLayout>
-        <ScrollRestoration />
-        <Scripts />
+        </Layout>
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
+        <LiveReload nonce={nonce} />
       </body>
     </html>
   );
@@ -97,7 +131,8 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  const [root] = useMatches();
+  const rootData = useRootLoaderData();
+  const nonce = useNonce();
   let errorMessage = 'Unknown error';
   let errorStatus = 500;
 
@@ -117,7 +152,7 @@ export function ErrorBoundary() {
         <Links />
       </head>
       <body>
-        <MainLayout {...root.data}>
+        <Layout {...rootData}>
           <div className="route-error">
             <h1>Oops</h1>
             <h2>{errorStatus}</h2>
@@ -127,9 +162,10 @@ export function ErrorBoundary() {
               </fieldset>
             )}
           </div>
-        </MainLayout>
-<ScrollRestoration />
-        <Scripts />
+        </Layout>
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
+        <LiveReload nonce={nonce} />
       </body>
     </html>
   );
@@ -140,23 +176,26 @@ export function ErrorBoundary() {
  * @see https://shopify.dev/docs/api/storefront/latest/objects/CustomerAccessToken
  *
  * @example
- * ```ts
- * //
+ * ```js
  * const {isLoggedIn, headers} = await validateCustomerAccessToken(
  *  customerAccessToken,
  *  session,
- *  );
- *  ```
- *  */
-async function validateCustomerAccessToken(customerAccessToken, session) {
+ * );
+ * ```
+ * @param {LoaderFunctionArgs['context']['session']} session
+ * @param {CustomerAccessToken} [customerAccessToken]
+ */
+async function validateCustomerAccessToken(session, customerAccessToken) {
   let isLoggedIn = false;
   const headers = new Headers();
   if (!customerAccessToken?.accessToken || !customerAccessToken?.expiresAt) {
     return {isLoggedIn, headers};
   }
-  const expiresAt = new Date(customerAccessToken.expiresAt);
-  const dateNow = new Date();
+
+  const expiresAt = new Date(customerAccessToken.expiresAt).getTime();
+  const dateNow = Date.now();
   const customerAccessTokenExpired = expiresAt < dateNow;
+
   if (customerAccessTokenExpired) {
     session.unset('customerAccessToken');
     headers.append('Set-Cookie', await session.commit());
@@ -194,7 +233,7 @@ const MENU_FRAGMENT = `#graphql
 `;
 
 const HEADER_QUERY = `#graphql
-fragment Shop on Shop {
+  fragment Shop on Shop {
     id
     name
     description
@@ -236,3 +275,8 @@ const FOOTER_QUERY = `#graphql
   }
   ${MENU_FRAGMENT}
 `;
+
+/** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
+/** @typedef {import('@remix-run/react').ShouldRevalidateFunction} ShouldRevalidateFunction */
+/** @typedef {import('@shopify/hydrogen/storefront-api-types').CustomerAccessToken} CustomerAccessToken */
+/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */

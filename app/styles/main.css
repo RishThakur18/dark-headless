@@ -572,3 +572,14 @@ aside li {
 .account-logout {
   display: inline-block;
 }
+
+
+
+.btn-primary {
+  background-color: transparent;
+  border: 1px solid white;
+  padding: 1em;
+  color: white;
+  width: 200px;
+  margin: 100px;
+}

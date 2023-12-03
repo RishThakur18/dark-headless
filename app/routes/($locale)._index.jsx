@@ -2,8 +2,9 @@ import {defer} from '@shopify/remix-oxygen';
 import { useLoaderData } from '@remix-run/react';
 
 import { RecommendedProducts } from '~/sections/recommendedProducts';
-import { FeaturedCollection } from '~/sections/featuredCollecton';
 import { MainBannerContent, links as MainBannerContentLinks } from '~/sections/mainBannerContent';
+import { CollectionProducts,  links as CollectionProductsLinks } from '~/sections/collectionProducts';
+import { FeaturedCollection } from '~/sections/featuredCollecton';
 
 /**
  * @type {MetaFunction}
@@ -33,14 +34,18 @@ export default function Homepage() {
         <source src="https://cdn.shopify.com/videos/c/o/v/25e9617c1c3b4b49a512a0bef421f808.mp4" type="video/mp4" />
       </video>
       <MainBannerContent />
-      <FeaturedCollection collection={data.featuredCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
+      <CollectionProducts products={data.recommendedProducts} />
+      {/* <FeaturedCollection collection={data.featuredCollection} /> */}
+      {/* <RecommendedProducts products={data.recommendedProducts} /> */}
     </div>
   );
 }
 
 export function links() {
-  return [ ...MainBannerContentLinks() ];
+  return [ 
+    ...MainBannerContentLinks(), 
+    ...CollectionProductsLinks()
+  ];
 }
 
 const FEATURED_COLLECTION_QUERY = `#graphql
@@ -89,7 +94,7 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
   }
   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
+    products(first: 8, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...RecommendedProduct
       }

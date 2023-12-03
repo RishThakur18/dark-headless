@@ -1,11 +1,6 @@
 import { Link } from '@remix-run/react';
 import { Image } from '@shopify/hydrogen';
 
-/**
- * @param {{
-*   collection: FeaturedCollectionFragment;
-* }}
-*/
 export function FeaturedCollection({collection}) {
  if (!collection) return null;
  const image = collection?.image;

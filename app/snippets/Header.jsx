@@ -54,7 +54,6 @@ export function HeaderMenu({ menu, primaryDomainUrl, viewport }) {
           end
           onClick={closeAside}
           prefetch="intent"
-          style={activeLinkStyle}
           to="/"
         >
           Home
@@ -77,7 +76,6 @@ export function HeaderMenu({ menu, primaryDomainUrl, viewport }) {
             key={item.id}
             onClick={closeAside}
             prefetch="intent"
-            className="header-menu-item"
             to={url}
           >
             {item.title}
@@ -137,11 +135,4 @@ function CartToggle({ cart }) {
       </Await>
     </Suspense>
   );
-}
-
-function activeLinkStyle({ isActive, isPending }) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'black',
-  };
 }

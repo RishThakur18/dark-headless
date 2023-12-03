@@ -13,9 +13,8 @@ import {
   isRouteErrorResponse,
 } from '@remix-run/react';
 import favicon from '../public/favicon.svg';
-import resetStyles from './styles/reset.css';
-import appStyles from './styles/app.css';
-import {Layout} from '~/components/Layout';
+import mainStyles from './styles/main.css';
+import {Layout} from '~/snippets/Layout';
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -37,8 +36,7 @@ export const shouldRevalidate = ({formMethod, currentUrl, nextUrl}) => {
 
 export function links() {
   return [
-    {rel: 'stylesheet', href: resetStyles},
-    {rel: 'stylesheet', href: appStyles},
+    {rel: 'stylesheet', href: mainStyles},
     {
       rel: 'preconnect',
       href: 'https://cdn.shopify.com',
@@ -88,7 +86,7 @@ export async function loader({context}) {
   const headerPromise = storefront.query(HEADER_QUERY, {
     cache: storefront.CacheLong(),
     variables: {
-      headerMenuHandle: 'main-menu', // Adjust to your header menu handle
+      headerMenuHandle: 'nested-menu', // Adjust to your header menu handle
     },
   });
 

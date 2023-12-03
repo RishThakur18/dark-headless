@@ -1,13 +1,13 @@
 import {Await} from '@remix-run/react';
 import {Suspense} from 'react';
-import {Aside} from '~/components/Aside';
-import {Footer} from '~/components/Footer';
-import {Header, HeaderMenu} from '~/components/Header';
-import {CartMain} from '~/components/Cart';
+import {Aside} from '~/snippets/Aside';
+import {Footer} from '~/snippets/Footer';
+import {Header, HeaderMenu} from '~/snippets/Header';
+import {CartMain} from '~/snippets/Cart';
 import {
   PredictiveSearchForm,
   PredictiveSearchResults,
-} from '~/components/Search';
+} from '~/snippets/Search';
 
 /**
  * @param {LayoutProps}

@@ -1,5 +1,5 @@
 import {json} from '@shopify/remix-oxygen';
-import {NO_PREDICTIVE_SEARCH_RESULTS} from '~/components/Search';
+import {NO_PREDICTIVE_SEARCH_RESULTS} from '~/snippets/Search';
 
 const DEFAULT_SEARCH_TYPES = [
   'ARTICLE',
@@ -318,8 +318,8 @@ const PREDICTIVE_SEARCH_QUERY = `#graphql
  */
 
 /** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
-/** @typedef {import('~/components/Search').NormalizedPredictiveSearch} NormalizedPredictiveSearch */
-/** @typedef {import('~/components/Search').NormalizedPredictiveSearchResults} NormalizedPredictiveSearchResults */
+/** @typedef {import('~/snippets/Search').NormalizedPredictiveSearch} NormalizedPredictiveSearch */
+/** @typedef {import('~/snippets/Search').NormalizedPredictiveSearchResults} NormalizedPredictiveSearchResults */
 /** @typedef {import('storefrontapi.generated').PredictiveArticleFragment} PredictiveArticleFragment */
 /** @typedef {import('storefrontapi.generated').PredictiveCollectionFragment} PredictiveCollectionFragment */
 /** @typedef {import('storefrontapi.generated').PredictivePageFragment} PredictivePageFragment */

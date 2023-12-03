@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
   --aside-width: 400px;
   --cart-aside-summary-height-with-discount: 300px;
@@ -6,6 +12,48 @@
   --header-height: 64px;
   --color-dark: #000;
   --color-light: #fff;
+
+  --heading-font-family: "Sans serif";
+  --heading-font-weight: "400";
+  --heading-font-style: "regular";
+
+  --text-font-family: "Sans Serif";
+  --text-font-weight: "500";
+  --text-font-style: "regular";
+
+  --base-text-font-size: 0.5rem;
+  --default-text-font-size: 1rem;
+  --background-dark: "black";
+  --background-light: "white";
+
+  --heading-color: "white";
+  --text-color: "";
+  --link-color: "";
+
+  --border-color: "";
+
+  --button-background: "";
+  --button-text-color: "";
+
+  --header-background: transparent;
+  --header-background-sticky: black;
+  --header-heading-color-dark: "";
+  --header-light-text-color-light: "";
+  --header-border-color: "";
+
+  --footer-background: "";
+  --footer-heading-color-dark: "";
+  --footer-light-text-color-light: "";
+  --footer-border-color: "";
+}
+
+#main-video-banner {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1;
 }
 
 img {
@@ -117,6 +165,7 @@ aside li {
   pointer-events: auto;
   visibility: visible;
 }
+
 /* reveal aside */
 .overlay:target aside {
   transform: translateX(calc(var(--aside-width) * -1));
@@ -127,16 +176,62 @@ aside li {
 * components/Header
 * --------------------------------------------------
 */
-.header {
+.header-wrapper {
   align-items: center;
-  background: #fff;
+  background-color: var(--header-background);
   display: flex;
-  height: var(--header-height);
-  padding: 0 1rem;
+  flex-direction: column;
   position: sticky;
   top: 0;
   z-index: 1;
+  justify-content: center;
 }
+
+.header-logo {
+  height: 50px;
+  width: auto;
+}
+
+.header-wrapper.sticky-header {
+  background-color: var(--header-background-sticky);
+}
+
+.header-logo-block {
+  display: grid;
+  grid-template-columns: 2fr 5fr 2fr;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+@media screen and (max-width: 749px) {
+  .header-menu-mobile {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .header-menu-desktop {
+    display: none;
+  }
+}
+
+
+@media screen and (min-width: 750px) {
+
+  .header-menu-mobile {
+    display: none;
+  }
+
+  .header-menu-desktop {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0 50px;
+    border: 1px solid white;
+  }
+}
+
 
 .header-menu-mobile-toggle {
   @media (min-width: 48em) {
@@ -150,27 +245,28 @@ aside li {
   grid-gap: 1rem;
 }
 
-.header-menu-desktop {
-  display: none;
-  grid-gap: 1rem;
-  @media (min-width: 45em) {
-    display: flex;
-    grid-gap: 1rem;
-    margin-left: 3rem;
-  }
-}
-
 .header-menu-item {
-  cursor: pointer;
-}
-
-.header-ctas {
-  align-items: center;
+  flex-grow: 1;
+  flex-basis: 0;
+  color: white;
+  padding: 10px 20px;
+  border: 1px solid white;
   display: flex;
-  grid-gap: 1rem;
-  margin-left: auto;
+  justify-content: center;
+  align-items: center;
 }
 
+.header-icons-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-icon-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 /*
 * --------------------------------------------------
 * components/Footer
@@ -251,6 +347,7 @@ aside li {
   align-items: center;
   display: flex;
 }
+
 /*
 * --------------------------------------------------
 * components/Search
@@ -310,6 +407,7 @@ aside li {
 
 .featured-collection-image {
   aspect-ratio: 1 / 1;
+
   @media (min-width: 45em) {
     aspect-ratio: 16 / 9;
   }
@@ -325,6 +423,7 @@ aside li {
   display: grid;
   grid-gap: 1.5rem;
   grid-template-columns: repeat(2, 1fr);
+
   @media (min-width: 45em) {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -358,6 +457,7 @@ aside li {
 .collection-description {
   margin-bottom: 1rem;
   max-width: 95%;
+
   @media (min-width: 45em) {
     max-width: 600px;
   }
@@ -382,6 +482,7 @@ aside li {
 */
 .product {
   display: grid;
+
   @media (min-width: 45em) {
     grid-template-columns: 1fr 1fr;
     grid-gap: 4rem;
